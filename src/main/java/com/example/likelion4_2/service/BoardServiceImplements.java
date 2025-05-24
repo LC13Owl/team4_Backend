@@ -6,13 +6,11 @@ import com.example.likelion4_2.repository.BoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.List;
 
 @Service
 public class BoardServiceImplements implements BoardService {
-
     private final BoardRepository boardRepository;
 
     @Autowired
@@ -20,30 +18,50 @@ public class BoardServiceImplements implements BoardService {
         this.boardRepository = boardRepository;
     }
 
-    @Override //create
+    @Override
     public void createBoard(BoardDto boardDto) {
-        BoardEntity boardEntity = new BoardEntity(boardDto.getTitle(), boardDto.getContent());
-        boardRepository.save(boardEntity);
-    }
-
-    @Override //read
-    public List<BoardDto> getAllBoards() {
-        List<BoardEntity> boardEntities = boardRepository.findAll(); // DB에서 전체 조회
-        List<BoardDto> boardDtoList = new ArrayList<>();
-
-        for (BoardEntity entity : boardEntities) {
-            BoardDto dto = new BoardDto(entity.getId(), entity.getTitle(), entity.getContent());
-            boardDtoList.add(dto); // 하나씩 DTO로 변환해서 담기
-        }
-
-        return boardDtoList;
+        BoardEntity entity = new BoardEntity(
+                boardDto.getTitle(),
+                boardDto.getContent(),
+                boardDto.getUserId(),
+                boardDto.getEmotion()
+        );
+        boardRepository.save(entity);
     }
 
     @Override
     public BoardDto readById(int id) {
         BoardEntity board = boardRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다"));
-        return new BoardDto(board.getId(), board.getTitle(), board.getContent());
+        return new BoardDto(board.getId(), board.getTitle(), board.getContent(), board.getUserId(), board.getEmotion());
+    }
+
+    @Override
+    public List<BoardDto> getAllBoards() {
+        List<BoardEntity> entities = boardRepository.findAll();
+        return toDtoList(entities);
+    }
+
+    @Override
+    public List<BoardDto> getBoardsByLatest() {
+        List<BoardEntity> entities = boardRepository.findAllByOrderByIdDesc();
+        return toDtoList(entities);
+    }
+
+    @Override
+    public List<BoardDto> getBoardsByUser(String userId) {
+        List<BoardEntity> entities = boardRepository.findByUserId(userId);
+        return toDtoList(entities);
+    }
+
+    @Override
+    public void updateById(int id, BoardDto boardDto) {
+        BoardEntity entity = boardRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다"));
+        entity.setTitle(boardDto.getTitle());
+        entity.setContent(boardDto.getContent());
+        entity.setEmotion(boardDto.getEmotion());
+        boardRepository.save(entity);
     }
 
     @Override
@@ -51,19 +69,17 @@ public class BoardServiceImplements implements BoardService {
         boardRepository.deleteById(id);
     }
 
-    @Override
-    public void updateById(int id, BoardDto boardDto) {
-        // 예시: id로 엔티티 조회 후 수정
-        BoardEntity board = boardRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다"));
-
-        board.setTitle(boardDto.getTitle());
-        board.setContent(boardDto.getContent());
-
-        boardRepository.save(board);
+    private List<BoardDto> toDtoList(List<BoardEntity> entities) {
+        List<BoardDto> dtos = new ArrayList<>();
+        for (BoardEntity entity : entities) {
+            dtos.add(new BoardDto(
+                    entity.getId(),
+                    entity.getTitle(),
+                    entity.getContent(),
+                    entity.getUserId(),
+                    entity.getEmotion()
+            ));
+        }
+        return dtos;
     }
-
-
 }
-
-

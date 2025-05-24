@@ -4,49 +4,41 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "board")
-
 public class BoardEntity {
-    @Id //객체가 생성될 때마다 ID값이 늘어남
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;//id가 객체의 개념
+    private Integer id;
 
-    @Column(name = "title", length = 50)
+    @Column(length = 50)
     private String title;
-    @Column(name = "content", length = 500)
+
+    @Column(length = 500)
     private String content;
 
-    public BoardEntity( String title, String content) {
+    private String userId;
+    private String emotion;
+
+    public BoardEntity() {}
+
+    public BoardEntity(String title, String content, String userId, String emotion) {
         this.title = title;
         this.content = content;
+        this.userId = userId;
+        this.emotion = emotion;
     }
 
-    public BoardEntity() {
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
 
-    }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
 
-    public int getId() {
-        return id;
-    }
+    public String getContent() { return content; }
+    public void setContent(String content) { this.content = content; }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+    public String getUserId() { return userId; }
+    public void setUserId(String userId) { this.userId = userId; }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
+    public String getEmotion() { return emotion; }
+    public void setEmotion(String emotion) { this.emotion = emotion; }
 }
-
-
