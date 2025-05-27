@@ -37,7 +37,6 @@ public class DiaryEntity {
         this.isPublic = isPublic;
     }
 
-    // Getter, Setter 모두 추가
 
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }

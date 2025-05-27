@@ -29,7 +29,6 @@ public class DiaryDto {
         this.createdAt = createdAt;
     }
 
-    // Getter, Setter 모두 추가
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
